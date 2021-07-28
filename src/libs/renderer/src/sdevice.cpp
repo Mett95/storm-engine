@@ -687,7 +687,9 @@ bool DX9RENDER::InitDevice(bool windowed, HWND _hwnd, long width, long height)
         // d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
     }
 
-    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd, D3DCREATE_MIXED_VERTEXPROCESSING, &d3dpp, &d3d9) !=
+    if (d3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
+                          D3DCREATE_HARDWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE | D3DCREATE_PUREDEVICE, &d3dpp,
+                          &d3d9) !=
         D3D_OK)
     {
         // if(CHECKD3DERR(E_FAIL)==true)    return false;
@@ -2499,7 +2501,7 @@ void DX9RENDER::RecompileEffects()
     effects_.release();
 
     std::filesystem::path cur_path = std::filesystem::current_path();
-    std::filesystem::current_path(fio->_GetExecutableDirectory());
+    std::filesystem::current_path(std::filesystem::u8path(fio->_GetExecutableDirectory()));
     for (const auto &p : std::filesystem::recursive_directory_iterator("resource/techniques"))
         if (is_regular_file(p) && p.path().extension() == ".fx")
         {
